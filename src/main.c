@@ -1,14 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
+#include "all.h"
 #include "lexer/lexer.h"
 #include "parser/parser.h"
 #include "exec/exec.h"
-
-#define BUFFER_SIZE 4096
-
-extern char **environ;
 
 static void process_input(const char *input, struct exec_state *state)
 {

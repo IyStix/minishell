@@ -1,6 +1,8 @@
 #ifndef LEXER_H
 #define LEXER_H
 
+#include "../all.h"
+
 enum token_type {
     TOKEN_WORD,
     TOKEN_ASSIGNMENT_WORD,
@@ -25,10 +27,11 @@ struct lexer {
     int has_error;
 };
 
+struct token *token_create(enum token_type type, char *value);
+void token_free(struct token *token);
 struct lexer *lexer_init(char *input);
 void lexer_free(struct lexer *lexer);
 struct token *lexer_next_token(struct lexer *lexer);
-void token_free(struct token *token);
 
 int is_word_char(char c);
 int is_operator_char(char c);
