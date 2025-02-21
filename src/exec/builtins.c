@@ -6,6 +6,10 @@
 #include <limits.h>
 #include "builtins.h"
 
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
 int is_builtin(const char *cmd)
 {
     return cmd && (

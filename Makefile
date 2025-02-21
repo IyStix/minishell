@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -pedantic -std=c99 -Wvla
+CFLAGS = -Wall -Wextra -Werror -pedantic -std=c99 -Wvla -D_DEFAULT_SOURCE
 
 SRC = src/main.c src/lexer/lexer.c src/parser/parser.c src/exec/exec.c src/exec/builtins.c
 

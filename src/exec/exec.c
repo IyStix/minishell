@@ -88,6 +88,13 @@ void restore_redirections(int saved_fds[3])
     close(saved_fds[2]);
 }
 
+static char *safe_strdup(const char *str)
+{
+    if (!str)
+        return NULL;
+    return strdup(str);
+}
+
 static int exec_external_command(struct command *cmd, struct exec_state *state)
 {
     if (!cmd->name)
@@ -99,7 +106,7 @@ static int exec_external_command(struct command *cmd, struct exec_state *state)
         (cmd->name[0] == '.' && cmd->name[1] == '/') ||
         (cmd->name[0] == '.' && cmd->name[1] == '.' && cmd->name[2] == '/'))
     {
-        full_path = strdup(cmd->name);
+        full_path = safe_strdup(cmd->name);
     }
     else
     {
@@ -107,7 +114,7 @@ static int exec_external_command(struct command *cmd, struct exec_state *state)
         if (!path)
             path = "/bin:/usr/bin";
 
-        char *path_copy = strdup(path);
+        char *path_copy = safe_strdup(path);
         char *dir = strtok(path_copy, ":");
         
         while (dir)
@@ -116,7 +123,7 @@ static int exec_external_command(struct command *cmd, struct exec_state *state)
             snprintf(tmp, sizeof(tmp), "%s/%s", dir, cmd->name);
             if (access(tmp, X_OK) == 0)
             {
-                full_path = strdup(tmp);
+                full_path = safe_strdup(tmp);
                 break;
             }
             dir = strtok(NULL, ":");
@@ -172,7 +179,8 @@ static int exec_command_with_env(struct command *cmd, struct exec_state *state)
     {
         for (int i = 0; i < cmd->assignments_count; i++)
         {
-            putenv(strdup(cmd->assignments[i]));
+            char *assignment = safe_strdup(cmd->assignments[i]);
+            putenv(assignment);
         }
         return 0;
     }
@@ -182,7 +190,7 @@ static int exec_command_with_env(struct command *cmd, struct exec_state *state)
         char **new_env = malloc(sizeof(char *) * (cmd->assignments_count + 1));
         for (int i = 0; i < cmd->assignments_count; i++)
         {
-            new_env[i] = strdup(cmd->assignments[i]);
+            new_env[i] = safe_strdup(cmd->assignments[i]);
         }
         new_env[cmd->assignments_count] = NULL;
         environ = new_env;

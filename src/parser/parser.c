@@ -2,6 +2,14 @@
 #include <string.h>
 #include "parser.h"
 
+// Ajoutez cette fonction d'utilitaire pour éviter les problèmes de strdup
+static char *safe_strdup(const char *str)
+{
+    if (!str)
+        return NULL;
+    return strdup(str);
+}
+
 struct parser *parser_init(struct lexer *lexer)
 {
     struct parser *parser = malloc(sizeof(struct parser));
@@ -44,7 +52,6 @@ static struct ast_node *create_node(enum node_type type)
     return node;
 }
 
-
 struct ast_node *parse_command(struct parser *parser)
 {
     struct command *cmd = create_command();
@@ -60,14 +67,14 @@ struct ast_node *parse_command(struct parser *parser)
     
     if (parser->current_token->type == TOKEN_WORD)
     {
-        cmd->name = strdup(parser->current_token->value);
-        cmd->args[cmd->args_count++] = strdup(parser->current_token->value);
+        cmd->name = safe_strdup(parser->current_token->value);
+        cmd->args[cmd->args_count++] = safe_strdup(parser->current_token->value);
         parser_advance(parser);
         
         while (parser->current_token->type == TOKEN_WORD)
         {
             cmd->args = realloc(cmd->args, sizeof(char *) * (cmd->args_count + 1));
-            cmd->args[cmd->args_count++] = strdup(parser->current_token->value);
+            cmd->args[cmd->args_count++] = safe_strdup(parser->current_token->value);
             parser_advance(parser);
         }
     }
@@ -84,7 +91,7 @@ struct ast_node *parse_command(struct parser *parser)
             cmd->assignments = realloc(cmd->assignments, 
                 sizeof(char *) * (cmd->assignments_count + 1));
             cmd->assignments[cmd->assignments_count++] = 
-                strdup(parser->current_token->value);
+                safe_strdup(parser->current_token->value);
             parser_advance(parser);
         }
         else
@@ -103,7 +110,6 @@ struct ast_node *parse_command(struct parser *parser)
     return node;
 }
 
-
 struct redirection *parse_redirection(struct parser *parser)
 {
     struct redirection *redir = malloc(sizeof(struct redirection));
@@ -119,7 +125,7 @@ struct redirection *parse_redirection(struct parser *parser)
     
     if (parser->current_token->type == TOKEN_OPERATOR)
     {
-        redir->operator = strdup(parser->current_token->value);
+        redir->operator = safe_strdup(parser->current_token->value);
         parser_advance(parser);
     }
     else
@@ -130,7 +136,7 @@ struct redirection *parse_redirection(struct parser *parser)
     
     if (parser->current_token->type == TOKEN_WORD)
     {
-        redir->word = strdup(parser->current_token->value);
+        redir->word = safe_strdup(parser->current_token->value);
         parser_advance(parser);
     }
     else
@@ -171,7 +177,7 @@ struct ast_node *parse_pipeline(struct parser *parser)
         
         pipe_node->data.binary.left = left;
         pipe_node->data.binary.right = right;
-        pipe_node->data.binary.operator = strdup("|");
+        pipe_node->data.binary.operator = safe_strdup("|");
         
         left = pipe_node;
     }
@@ -189,7 +195,7 @@ struct ast_node *parse_and_or(struct parser *parser)
            (strcmp(parser->current_token->value, "&&") == 0 ||
             strcmp(parser->current_token->value, "||") == 0))
     {
-        char *op = strdup(parser->current_token->value);
+        char *op = safe_strdup(parser->current_token->value);
         parser_advance(parser);
         
         struct ast_node *right = parse_pipeline(parser);
@@ -250,7 +256,7 @@ struct ast_node *parse_list(struct parser *parser)
         
         sequence_node->data.binary.left = left;
         sequence_node->data.binary.right = right;
-        sequence_node->data.binary.operator = strdup(";");
+        sequence_node->data.binary.operator = safe_strdup(";");
         
         left = sequence_node;
     }

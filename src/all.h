@@ -2,7 +2,6 @@
 #define ALL_H
 
 #define _GNU_SOURCE
-#define _DEFAULT_SOURCE
 #define _XOPEN_SOURCE 700
 #define _POSIX_C_SOURCE 200809L
 
