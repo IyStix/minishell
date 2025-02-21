@@ -1,8 +1,10 @@
 #ifndef ALL_H
 #define ALL_H
 
+#define _GNU_SOURCE
 #define _DEFAULT_SOURCE
 #define _XOPEN_SOURCE 700
+#define _POSIX_C_SOURCE 200809L
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,7 +16,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <limits.h>
-
 
 extern char **environ;
 
