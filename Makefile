@@ -11,4 +11,10 @@ check: minishell
 	@chmod +x tests/testsuite.sh
 	@./tests/testsuite.sh
 
+clean:
+	rm -f minishell
+	find . -type f -name "*.o" -delete
+	find . -type f -name "*.out" -delete
+	find . -type f -name "*.log" -delete
+
 .PHONY: minishell check
